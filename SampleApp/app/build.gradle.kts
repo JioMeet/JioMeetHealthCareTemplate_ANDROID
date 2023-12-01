@@ -63,8 +63,8 @@ android {
 repositories {
     maven {
         credentials {
-            username = "GITHUB USERNAME HERE"
-            password = "GITHUB PASSWORD HERE"
+            username = "GIT-USERNAME"
+            password = "GIT_PASSWORD"
         }
         url = uri("https://maven.pkg.github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID")
     }
@@ -74,7 +74,7 @@ repositories {
 
 
 dependencies {
-    implementation ("com.jiomeet.platform:jiomeethealthcaretemplate:3.1.0-SNAPSHOT")
+    implementation ("com.jiomeet.platform:jiomeethealthcaretemplate:3.1.0-SNAPSHOT-4")
     implementation ("androidx.core:core-ktx:1.9.0")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.5")

@@ -1,4 +1,4 @@
-# JioHealthHub Template UI Quickstart
+# JioMeet Template UI Quickstart
 
 **Welcome to JioHealthCareTemplate Template UI**, a SDK that streamlines the integration of Jiomeet's powerful audio and video functionalities.
 
@@ -37,6 +37,22 @@ In Jiomeet Template UI, you'll find a range of powerful features designed to enh
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
+
+#### Dependencies to be added
+
+   ````gradle
+   plugins {
+     kotlin("kapt")
+   }
+
+   android {
+       ...
+       compileOptions {
+           sourceCompatibility = JavaVersion.VERSION_11
+           targetCompatibility = JavaVersion.VERSION_11
+       }
+   }
+```
 
 #### Jetpack Compose:
 
@@ -78,12 +94,12 @@ i. In Gradle Scripts/build.gradle (Module: <projectname>) add the Template UI de
 ```gradle
 dependencies {
     ...
-    implementation "com.jiomeet.platform:jiomeethealthcaretemplate:<version>"
+    implementation "com.jiomeet.platform:jiomeetcoretemplatesdk:<version>"
     ...
 }
 ```
 
-Find the [Latest version](https://maven.pkg.github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID/releases) of the UI Kit and replace <version> with the one you want to use. For example: 2.1.8.
+Find the [Latest version](https://github.com/JioMeet/JioMeetCoreTemplateSDK_ANDROID/releases) of the UI Kit and replace <version> with the one you want to use. For example: 2.1.8.
 
 ### Add permissions for network and device access.
 
@@ -150,40 +166,96 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 
 ### Start your App
 
-update onCreate of parent app to run JioHealthCareLauncherActivity and pass when the app starts. The updated code should like the provided code sample:
+1. Modify AndroidManifest.xml: In the AndroidManifest.xml file of their app, users should specify the custom Application class they created as the application name. This tells Android to use their custom Application class when the app starts.
 
-```kotlin
+```xml
+<application
+    android:name=".MyApplication" <!-- Specify the name of your custom Application class -->
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:theme="@style/AppTheme">
+    <!-- ... -->
+    </application>
+```
+
+### 
+
+update xml file for parent activity add below parameters. The updated code should like the provided code sample:
+Note:- This would be the view where you will launch your view.
+<androidx.compose.ui.platform.ComposeView
+android:id="@+id/compose_view"
+android:layout_width="match_parent"
+android:layout_height="match_parent" />
+
+
+update onCreate of parent app to run JioHealthCareLauncherActivity and pass  when the app starts. The updated code should like the provided code sample:
+
+```kotlin 
+      Code to manage PIP.
+        @RequiresApi(Build.VERSION_CODES.O)
+        override fun onPictureInPictureModeChanged(
+           isInPictureInPictureMode: Boolean,
+           newConfig: Configuration
+        ) {
+                   super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+                   isPipEnabled.value = isInPictureInPictureMode
+        }
+
+        override fun onUserLeaveHint() {
+                   super.onUserLeaveHint()
+                   if (!pipSupported) return
+                   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+                   pipParams()?.let { enterPictureInPictureMode(it) }
+        }
+
+        private val pipSupported: Boolean by lazy {
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) packageManager.hasSystemFeature(
+                      PackageManager.FEATURE_PICTURE_IN_PICTURE
+                   )
+                   else false
+        }
+
 
 
 override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+   super.onCreate(savedInstanceState)
 
-    //Code to observe differnt events in meeting
-     lifecycleScope.launch {
-            CallbackSharedEvent.callbackFlow.events.collect {
-                when(it){
-                    is OnParticipantIconClicked -> {
-                        Toast.makeText(this,"ParticipantIcon clicked",Toast.LENGTH_LONG).show()
-                    }
-                    is OnLeaveParticipant ->{
-                        Toast.makeText(this,"User Left Meeting",Toast.LENGTH_LONG).show()
-                        finish()
-                    }
-                }
+//    Code to observe differnt events in meeting
+   val jioMeetListener = object : JioMeetListener {
+            override fun onLeaveMeeting() {
+            TODO
+                finish()
+                Toast.makeText(this@MainActivity,"Left meeting ",Toast.LENGTH_LONG).show()
             }
+
+            override fun onParticipantIconClicked() {
+            TODO
+               Toast.makeText(this@MainActivity,"partcipant Icon clicked ",Toast.LENGTH_LONG).show()
+            }
+
+             override fun onLocalJoinedRoom(jmMeetingUser: JMMeetingUser) {
+                 super.onLocalJoinedRoom(jmMeetingUser)
+             }
+
+             override fun onLocalLeftRoom() {
+                 super.onLocalLeftRoom()
+             }
         }
 
-        val intent = Intent(this, JioHealthCareLauncherActivity::class.java)
-        intent.putExtra(JioMeetSdkManager.MEETING_ID,intent.getStringExtra(JioMeetSdkManager.MEETING_ID).toString())
-        intent.putExtra(JioMeetSdkManager.MEETING_PIN,intent.getStringExtra(JioMeetSdkManager.MEETING_PIN).toString()
-        intent.putExtra(JioMeetSdkManager.GUEST_NAME,intent.getStringExtra(JioMeetSdkManager.GUEST_NAME).toString())
-        startActivity(intent)
+   coresdkview.apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                        LaunchJioHealthCare( jioMeetListener = jioMeetListener,
+                            jmJoinMeetingData = jmJoinMeetingData,
+                            isPipEnabled = isPipEnabled)
+
+            }
+        }
 }
 ```
-
-- **_onShareInviteClicked_**(meetingId: String, meeting
-
-## Sample app
+### Sample app
 
 Visit our [JiomeetHealthCareTemplate UI Sample app](https://github.com/JioMeet/JioMeetCoreTemplateSDK_ANDROID) repo to run the ample app.
 
