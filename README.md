@@ -21,9 +21,6 @@
 ## Introduction
 
 In this documentation, we'll guide you through the process of installation, enabling you to enhance your Android app with Jiomeet's real-time communication capabilities swiftly and efficiently.Let's get started on your journey to creating seamless communication experiences with Jiomeet Template UI!
-
-![image info](./images/JioMeetTemplateUi.png)
-
 ---
 
 ## Features
@@ -32,15 +29,13 @@ In Jiomeet Template UI, you'll find a range of powerful features designed to enh
 
 **Voice and Video Calling**:Enjoy high-quality, real-time audio and video calls with your contacts.
 
-![image info](./images/Features.png)
-
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 
 #### Dependencies to be added
 
-   ````gradle
+   ``` gradle
    plugins {
      kotlin("kapt")
    }
@@ -175,89 +170,81 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
     android:label="@string/app_name"
     android:theme="@style/AppTheme">
     <!-- ... -->
-    </application>
+</application>
 ```
 
 ### 
 
-update xml file for parent activity add below parameters. The updated code should like the provided code sample:
-Note:- This would be the view where you will launch your view.
-<androidx.compose.ui.platform.ComposeView
-android:id="@+id/compose_view"
-android:layout_width="match_parent"
-android:layout_height="match_parent" />
-
-
-update onCreate of parent app to run JioHealthCareLauncherActivity and pass  when the app starts. The updated code should like the provided code sample:
-
+2. Update xml file for parent activity add below parameters.
+    **Note**:- This would be the parent view where you will launch your template.
+    ```xml
+    <androidx.compose.ui.platform.ComposeView
+    android:id="@+id/compose_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+    ```
+3. update onCreate to run LaunchCore() when the app starts. The updated code should be like the provided code sample:
 ```kotlin 
-      Code to manage PIP.
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onPictureInPictureModeChanged(
-           isInPictureInPictureMode: Boolean,
-           newConfig: Configuration
-        ) {
-                   super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-                   isPipEnabled.value = isInPictureInPictureMode
-        }
+    private val isPipEnabled = MutableStateFlow(false)
+    private val pipSupported: Boolean by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) packageManager.hasSystemFeature(
+            PackageManager.FEATURE_PICTURE_IN_PICTURE
+        )
+        else false
+    }
 
-        override fun onUserLeaveHint() {
-                   super.onUserLeaveHint()
-                   if (!pipSupported) return
-                   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-                   pipParams()?.let { enterPictureInPictureMode(it) }
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        BaseUrl.initializedNetworkInformation(this@JoinRoomActivity, Constant.Environment.PROD)
 
-        private val pipSupported: Boolean by lazy {
-                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) packageManager.hasSystemFeature(
-                      PackageManager.FEATURE_PICTURE_IN_PICTURE
-                   )
-                   else false
-        }
-
-
-
-override fun onCreate(savedInstanceState: Bundle?) {
-   super.onCreate(savedInstanceState)
-
-//    Code to observe differnt events in meeting
-   val jioMeetListener = object : JioMeetListener {
+        val jioMeetListener = object : JioMeetListener {
             override fun onLeaveMeeting() {
-            TODO
                 finish()
-                Toast.makeText(this@MainActivity,"Left meeting ",Toast.LENGTH_LONG).show()
+                Toast.makeText(this@JoinRoomActivity, "Left meeting ", Toast.LENGTH_LONG).show()
             }
 
             override fun onParticipantIconClicked() {
-            TODO
-               Toast.makeText(this@MainActivity,"partcipant Icon clicked ",Toast.LENGTH_LONG).show()
-            }
-
-             override fun onLocalJoinedRoom(jmMeetingUser: JMMeetingUser) {
-                 super.onLocalJoinedRoom(jmMeetingUser)
-             }
-
-             override fun onLocalLeftRoom() {
-                 super.onLocalLeftRoom()
-             }
-        }
-
-   coresdkview.apply {
-            // Dispose of the Composition when the view's LifecycleOwner
-            // is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                        LaunchJioHealthCare( jioMeetListener = jioMeetListener,
-                            jmJoinMeetingData = jmJoinMeetingData,
-                            isPipEnabled = isPipEnabled)
-
+                Toast.makeText(this@JoinRoomActivity, "partcipant Icon clicked ", Toast.LENGTH_LONG)
+                    .show()
             }
         }
+        val jmJoinMeetingData = JMJoinMeetingData(
+            meetingId = MEETIND_ID
+            meetingPin = MEETING_PIN,
+            displayName = DISPLAY_NAME,
+            version = "",
+            deviceId = ""
+        )
+        setContent {
+            LaunchJioHealthCare(
+                jioMeetListener = jioMeetListener,
+                jmJoinMeetingData = jmJoinMeetingData,
+                isPipEnabled = isPipEnabled
+            )
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: Configuration
+    ) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        isPipEnabled.value = isInPictureInPictureMode
+    }
+
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (!pipSupported) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        pipParams()?.let { enterPictureInPictureMode(it) }
+    }
 }
 ```
 ### Sample app
 
-Visit our [JiomeetHealthCareTemplate UI Sample app](https://github.com/JioMeet/JioMeetCoreTemplateSDK_ANDROID) repo to run the ample app.
+Visit our [JiomeetHealthCareTemplate UI Sample app](https://github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID) repo to run the ample app.
 
 ---
 
