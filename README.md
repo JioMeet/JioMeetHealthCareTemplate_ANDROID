@@ -114,6 +114,12 @@ In /app/Manifests/AndroidManifest.xml, add the following permissions after </app
 <!-- For Android 12 and above devices, the following permission is also required. -->
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
+### To Support screen share add the following lines in AndroidManifest.xml
+```
+   <service android:name="org.jio.telemedicine.service.OnGoingScreenShareService"
+   android:foregroundServiceType="mediaProjection"
+   android:stopWithTask="false" />
+```
 
 ### Requesting run time permissions
 
