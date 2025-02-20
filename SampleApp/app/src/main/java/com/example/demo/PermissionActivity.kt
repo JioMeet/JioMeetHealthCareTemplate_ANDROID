@@ -3,30 +3,29 @@ package com.example.demo
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.example.demo.view.ui.CoreLoginView
-import com.example.demo.viewModel.AppViewModel
 
 class PermissionActivity : ComponentActivity() {
 
-    private val conferencePermissions = arrayOf(
+    private val conferencePermissions = mutableListOf(
         Manifest.permission.CAMERA,
         Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.BLUETOOTH_CONNECT
-    )
+        Manifest.permission.READ_PHONE_STATE
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            add(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+    }.toTypedArray()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            val isNotGrantedAll = permissions.any { !it.value }
-            if (isNotGrantedAll) {
-                Toast.makeText(this, "Provide necessary permissions to proceed", Toast.LENGTH_SHORT)
-                    .show()
+            if (permissions.values.any { !it }) {
+                Toast.makeText(this, "Provide necessary permissions to proceed", Toast.LENGTH_SHORT).show()
             } else {
                 launchMainActivity()
             }
@@ -47,10 +46,8 @@ class PermissionActivity : ComponentActivity() {
     }
 
     private fun launchMainActivity() {
-        setContent {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     override fun onBackPressed() {

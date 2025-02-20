@@ -1,7 +1,5 @@
 package com.example.demo
 
-import android.app.UiModeManager
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -10,11 +8,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.jio.sdksampleapp.R
+import com.jiomeet.core.CoreApplication
 import com.jiomeet.core.constant.Constant
+import com.jiomeet.core.main.models.JMJoinMeetingConfig
 import com.jiomeet.core.main.models.JMJoinMeetingData
+import com.jiomeet.core.main.models.Speaker
 import com.jiomeet.core.utils.BaseUrl
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jio.telemedicine.sdkmanager.JioMeetListener
@@ -27,15 +25,15 @@ class JoinRoomActivity : ComponentActivity() {
 
     private val isPipEnabled = MutableStateFlow(false)
     private val pipSupported: Boolean by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) packageManager.hasSystemFeature(
-            PackageManager.FEATURE_PICTURE_IN_PICTURE
-        )
-        else false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+        else
+            false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        BaseUrl.initializedNetworkInformation(this@JoinRoomActivity, Constant.Environment.PROD)
+        BaseUrl.initializedNetworkInformation(Constant.Environment.PROD)
 
         val jioMeetListener = object : JioMeetListener {
             override fun onLeaveMeeting() {
@@ -55,10 +53,19 @@ class JoinRoomActivity : ComponentActivity() {
             version = "",
             deviceId = ""
         )
+        val jmJoinMeetingConfig = JMJoinMeetingConfig(
+            userRole = Speaker,
+            isInitialAudioOn = false,
+            isInitialVideoOn = false,
+            isShareScreen = false,
+            isShareWhiteBoard = false
+        )
+
         setContent {
             LaunchJioHealthCare(
                 jioMeetListener = jioMeetListener,
                 jmJoinMeetingData = jmJoinMeetingData,
+                jmJoinMeetingConfig = jmJoinMeetingConfig,
                 isPipEnabled = isPipEnabled
             )
         }
@@ -81,4 +88,5 @@ class JoinRoomActivity : ComponentActivity() {
 
         pipParams()?.let { enterPictureInPictureMode(it) }
     }
+
 }

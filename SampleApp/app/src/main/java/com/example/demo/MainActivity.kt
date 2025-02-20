@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         // Calling SDK from Activity as (Component activity)
         // Passing valid meeting ID and MeetingPin along with user name
         //Code to observe differnt events in meeting
-        BaseUrl.initializedNetworkInformation(this@MainActivity, Constant.Environment.PRESTAGE)
+        BaseUrl.initializedNetworkInformation(Constant.Environment.PROD)
         lifecycleScope.launch {
             CallbackSharedEvent.callbackFlow.events.collect {
                 when (it) {
