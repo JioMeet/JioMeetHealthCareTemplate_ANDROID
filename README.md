@@ -89,12 +89,12 @@ i. In Gradle Scripts/build.gradle (Module: <projectname>) add the Template UI de
 ```gradle
 dependencies {
     ...
-    implementation "com.jiomeet.platform:jiomeetcoretemplatesdk:<version>"
+    implementation "com.jiomeet.platform:jiomeethealthcaretemplate:<version>"
     ...
 }
 ```
 
-Find the [Latest version](https://github.com/JioMeet/JioMeetCoreTemplateSDK_ANDROID/releases) of the UI Kit and replace <version> with the one you want to use. For example: 2.1.8.
+Find the [Latest version](https://github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID/releases) of the UI Kit and replace <version> with the one you want to use. For example: 2.1.8.
 
 ### Add permissions for network and device access.
 
