@@ -215,10 +215,19 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
             version = "",
             deviceId = ""
         )
+
+        val jmJoinMeetingConfig = JMJoinMeetingConfig(
+            userRole = Speaker,
+            isInitialAudioOn = false,
+            isInitialVideoOn = false,
+            isShareScreen = true
+        )
+
         setContent {
             LaunchJioHealthCare(
                 jioMeetListener = jioMeetListener,
                 jmJoinMeetingData = jmJoinMeetingData,
+                jmJoinMeetingConfig = jmJoinMeetingConfig,
                 isPipEnabled = isPipEnabled
             )
         }
@@ -242,9 +251,21 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
     }
 }
 ```
+
+### Version 3.3.3
+Starting from version 3.3.3, users can now enable or disable screen sharing at the time of joining a meeting using the isShareScreen parameter in JMJoinMeetingConfig.
+```kotlin
+val jmJoinMeetingConfig = JMJoinMeetingConfig(
+    userRole = Speaker,
+    isInitialAudioOn = false,
+    isInitialVideoOn = false,
+    isShareScreen = true // Set to false to disable screen sharing on join
+)
+```
+
 ### Sample app
 
-Visit our [JiomeetHealthCareTemplate UI Sample app](https://github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID) repo to run the ample app.
+Visit our [JiomeetHealthCareTemplate UI Sample app](https://github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID) repo to run the sample app.
 
 ---
 
